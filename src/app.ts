@@ -52,6 +52,9 @@ app.get("/", async (req: Request, res: Response) => {
       getMoviesPromise(
         `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=en-US`
       ),
+      getMoviesPromise(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_networks=213&vote_average.gte=8&sort_by=popularity.desc`
+      ),
     ])
     .then(
       axios.spread((...responses) => {
@@ -61,6 +64,7 @@ app.get("/", async (req: Request, res: Response) => {
         const { data: upcomingMovies } = responses[3];
         const { data: nowPlayingMovies } = responses[4];
         const { data: genres } = responses[5];
+        const { data: topMoviePicks } = responses[6];
 
         const transformedPopularMovies = transformedMovieData(
           PopularMoviesConvert.toPopularMoviesModel(
@@ -93,7 +97,26 @@ app.get("/", async (req: Request, res: Response) => {
           IMAGE_URL_PREFIX
         );
 
+        const topPicksResults = TopPicksConvert.toTopPicksModel(
+          JSON.stringify(topMoviePicks)
+        ).results;
+        let transformedTopPicks: ITopPicks[] = [];
+        const indices = uniqueRandomRange(0, topPicksResults.length - 1);
+
+        [indices(), indices(), indices()].map((index) => {
+          transformedTopPicks.push({
+            id: topPicksResults[index].id,
+            name: topPicksResults[index].title,
+            backdropImage: `${IMAGE_URL_PREFIX}${topPicksResults[index].backdrop_path}`,
+            posterImage: `${IMAGE_URL_PREFIX}${topPicksResults[index].poster_path}`,
+            date: `On ${dayjs(topPicksResults[index].release_date).format(
+              "MMM DD, YYYY"
+            )}`,
+          });
+        });
+
         res.status(200).json({
+          topPicks: transformedTopPicks,
           genres: genres.genres,
           popularMovies: transformedPopularMovies,
           topRatedMovies: transformedTopRatedMovies,
@@ -111,32 +134,6 @@ app.get("/genres", async (req: Request, res: Response) => {
   );
 
   res.status(200).json(data);
-});
-
-app.get("/top-picks", async (req: Request, res: Response) => {
-  const { data } = await axios.get(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_networks=213&vote_average.gte=8&sort_by=popularity.desc`
-  );
-
-  const topPicksResults = TopPicksConvert.toTopPicksModel(
-    JSON.stringify(data)
-  ).results;
-  let results: ITopPicks[] = [];
-  const indices = uniqueRandomRange(0, topPicksResults.length - 1);
-
-  [indices(), indices(), indices()].map((index) => {
-    results.push({
-      id: topPicksResults[index].id,
-      name: topPicksResults[index].title,
-      backdropImage: `${IMAGE_URL_PREFIX}${topPicksResults[index].backdrop_path}`,
-      posterImage: `${IMAGE_URL_PREFIX}${topPicksResults[index].poster_path}`,
-      date: `On ${dayjs(topPicksResults[index].release_date).format(
-        "MMM DD, YYYY"
-      )}`,
-    });
-  });
-
-  res.status(200).json(results);
 });
 
 app.get("/movie-details/:id", async (req: Request, res: Response) => {
@@ -211,7 +208,10 @@ app.get("/movie-details/:id", async (req: Request, res: Response) => {
           genres: movieGenres,
           homepage: movieDetailsModel.homepage,
           overview: movieDetailsModel.overview,
-          videoKey: movieDetailsModel.videos.results[videoIndex].key,
+          videoKey:
+            videoIndex === -1
+              ? null
+              : movieDetailsModel.videos.results[videoIndex].key,
           cast: transfromedMovieCast,
           recommendedMovies: transformedRecommendedMovies,
           similarMovies: transformedSimilarMovies,
