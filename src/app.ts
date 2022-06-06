@@ -139,7 +139,7 @@ app.get("/top-picks", async (req: Request, res: Response) => {
   res.status(200).json(results);
 });
 
-app.get("/:id", async (req: Request, res: Response) => {
+app.get("/movie-details/:id", async (req: Request, res: Response) => {
   axios
     .all([
       axios.get(
