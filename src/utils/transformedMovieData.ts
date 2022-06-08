@@ -12,11 +12,16 @@ const transformedMovieData = (data: any[], imageUrlPrefix: string) => {
       title: singleData.title,
       rating: singleData.vote_average.toFixed(1),
       releaseYear: dayjs(singleData.release_date).year(),
-      image:
-        singleData.poster_path === null
-          ? ""
-          : `${imageUrlPrefix}${singleData.poster_path}`,
-      genre: getGenre(singleData.genre_ids[0] as TGenreIds),
+      image: !!singleData.poster_path
+        ? `${imageUrlPrefix}${singleData.poster_path}`
+        : null,
+      secondImage: !!singleData.backdrop_path
+        ? `${imageUrlPrefix}${singleData.backdrop_path}`
+        : null,
+      genre:
+        singleData.genre_ids.length > 0
+          ? getGenre(singleData.genre_ids[0] as TGenreIds)
+          : "N / A",
     });
   });
 

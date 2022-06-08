@@ -31,7 +31,7 @@ app.listen(port, () =>
   console.log(`Server running on http://localhost:${port}`)
 );
 
-app.get("/", async (req: Request, res: Response) => {
+app.get("/", async (_: Request, res: Response) => {
   axios
     .all([
       getMoviesPromise(
@@ -107,8 +107,8 @@ app.get("/", async (req: Request, res: Response) => {
           transformedTopPicks.push({
             id: topPicksResults[index].id,
             name: topPicksResults[index].title,
-            backdropImage: `${IMAGE_URL_PREFIX}${topPicksResults[index].backdrop_path}`,
-            posterImage: `${IMAGE_URL_PREFIX}${topPicksResults[index].poster_path}`,
+            backdropImage: !!topPicksResults[index].backdrop_path ? `${IMAGE_URL_PREFIX}${topPicksResults[index].backdrop_path}` : null,
+            posterImage: !!topPicksResults[index].poster_path ? `${IMAGE_URL_PREFIX}${topPicksResults[index].poster_path}` : null,
             date: `On ${dayjs(topPicksResults[index].release_date).format(
               "MMM DD, YYYY"
             )}`,

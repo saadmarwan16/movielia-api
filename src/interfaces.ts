@@ -3,14 +3,15 @@ export interface ITransformedResults {
   title: string;
   rating: string;
   releaseYear: number;
-  image: string;
+  image: string | null;
+  secondImage: string | null;
   genre: string;
 }
 
 export interface ITopPicks {
   id: number;
-  posterImage: string;
-  backdropImage: string;
+  posterImage: string | null;
+  backdropImage: string | null;
   name: string;
   date: string;
 }
