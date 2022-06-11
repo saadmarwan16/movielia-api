@@ -13,7 +13,14 @@ const transformedMovieData = (data: any[], imageUrlPrefix: string) => {
       title: singleData.title,
       rating: singleData.vote_average.toFixed(1),
       year: dayjs(singleData.release_date).year(),
-      image: getImage(imageUrlPrefix, singleData.poster_path, singleData.backdrop_path),
+      image: getImage(
+        imageUrlPrefix,
+        singleData.poster_path,
+        singleData.backdrop_path
+      ),
+      popularity: !!singleData.popularity
+        ? singleData.popularity.toFixed(1)
+        : "N / A",
       genre:
         singleData.genre_ids.length > 0
           ? getGenre(singleData.genre_ids[0] as TGenreIds)

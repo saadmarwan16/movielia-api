@@ -4,6 +4,7 @@ export interface ITransformedResults {
   rating: string;
   year: number;
   image: string;
+  popularity: string;
   genre: string;
 }
 
