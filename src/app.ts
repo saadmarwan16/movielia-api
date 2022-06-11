@@ -17,6 +17,8 @@ import { Convert as SimilarMoviesConvert } from "./models/similar_movies_model";
 import getMovies from "./utils/getMovies";
 import { Convert as SearchMoviesConvert } from "./models/search_movies_model";
 import { Convert as TopPicksConvert } from "./models/top_picks_model";
+import { Convert as SingleGenreConvert } from "./models/single_genre_model";
+import getImage from "./utils/getImage";
 
 const uniqueRandomRange = require("unique-random-range");
 
@@ -107,8 +109,11 @@ app.get("/", async (_: Request, res: Response) => {
           transformedTopPicks.push({
             id: topPicksResults[index].id,
             name: topPicksResults[index].title,
-            backdropImage: !!topPicksResults[index].backdrop_path ? `${IMAGE_URL_PREFIX}${topPicksResults[index].backdrop_path}` : null,
-            posterImage: !!topPicksResults[index].poster_path ? `${IMAGE_URL_PREFIX}${topPicksResults[index].poster_path}` : null,
+            image: getImage(
+              IMAGE_URL_PREFIX,
+              topPicksResults[index].poster_path,
+              topPicksResults[index].backdrop_path
+            ),
             date: `On ${dayjs(topPicksResults[index].release_date).format(
               "MMM DD, YYYY"
             )}`,
@@ -192,7 +197,7 @@ app.get("/movie-details/:id", async (req: Request, res: Response) => {
         let transfromedMovieCast: IMovieCast[] = [];
         movieCreditsModel.cast.forEach((actor) => {
           transfromedMovieCast.push({
-            profileImage: `${IMAGE_URL_PREFIX}${actor.profile_path}`,
+            image: getImage(IMAGE_URL_PREFIX, actor.profile_path, null),
             gender: actor.gender == 1 ? "Female" : "Male",
             name: actor.name,
           });
@@ -311,7 +316,7 @@ app.get(
   async (req: Request, res: Response) => {
     const results = await getMovies(
       `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc&page=${req.params.pageNumber}&with_genres=${req.params.id}`,
-      SimilarMoviesConvert.toSimilarMoviesModel,
+      SingleGenreConvert.toSingleGenreModel,
       IMAGE_URL_PREFIX
     );
 
