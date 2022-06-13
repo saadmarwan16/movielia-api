@@ -12,7 +12,10 @@ const transformedMovieData = (data: any[], imageUrlPrefix: string) => {
       id: singleData.id,
       title: singleData.title,
       rating: singleData.vote_average.toFixed(1),
-      year: dayjs(singleData.release_date).year(),
+      year:
+        singleData.release_date !== null
+          ? dayjs(singleData.release_date).year().toString()
+          : "N / A",
       image: getImage(
         imageUrlPrefix,
         singleData.poster_path,

@@ -2,7 +2,7 @@ export interface ITransformedResults {
   id: number;
   title: string;
   rating: string;
-  year: number;
+  year: string;
   image: string;
   popularity: string;
   genre: string;
