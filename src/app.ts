@@ -191,7 +191,7 @@ app.get("/movie-details/:id", async (req: Request, res: Response) => {
 
         let movieGenres: string[] = [];
         movieDetailsModel.genres.forEach((genre) => {
-          movieGenres.push(genre.name);
+          movieGenres.push(` ${genre.name}`);
         });
 
         let transfromedMovieCast: IMovieCast[] = [];
@@ -216,7 +216,7 @@ app.get("/movie-details/:id", async (req: Request, res: Response) => {
               : "N / A",
           runtime: movieDetailsModel.runtime?.toString() ?? "N / A",
           rating: movieDetailsModel.vote_average,
-          genres: movieGenres,
+          genres: movieGenres.length !== 0 ? movieGenres.toString() : "N / A",
           homepage:
             movieDetailsModel.homepage.length !== 0
               ? movieDetailsModel.homepage
