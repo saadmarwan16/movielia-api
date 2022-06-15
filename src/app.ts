@@ -205,14 +205,26 @@ app.get("/movie-details/:id", async (req: Request, res: Response) => {
 
         res.status(200).json({
           title: movieDetailsModel.title,
-          posterImage: `${IMAGE_URL_PREFIX}${movieDetailsModel.poster_path}`,
-          backdropImage: `${IMAGE_URL_PREFIX}${movieDetailsModel.backdrop_path}`,
-          releaseYear: dayjs(movieDetailsModel.release_date).year(),
-          runtime: movieDetailsModel.runtime,
+          image: getImage(
+            IMAGE_URL_PREFIX,
+            movieDetailsModel.poster_path,
+            movieDetailsModel.backdrop_path
+          ),
+          releaseYear:
+            movieDetailsModel.release_date !== null
+              ? dayjs(movieDetailsModel.release_date).year().toString()
+              : "N / A",
+          runtime: movieDetailsModel.runtime?.toString() ?? "N / A",
           rating: movieDetailsModel.vote_average,
           genres: movieGenres,
-          homepage: movieDetailsModel.homepage,
-          overview: movieDetailsModel.overview,
+          homepage:
+            movieDetailsModel.homepage.length !== 0
+              ? movieDetailsModel.homepage
+              : null,
+          overview:
+            movieDetailsModel.overview.length !== 0
+              ? movieDetailsModel.overview
+              : "N / A",
           videoKey:
             videoIndex === -1
               ? null
