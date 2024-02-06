@@ -20,6 +20,7 @@ import { Convert as TopPicksConvert } from "./models/top_picks_model";
 import { Convert as SingleGenreConvert } from "./models/single_genre_model";
 import getImage from "./utils/getImage";
 
+// Gets a random number within a range
 const uniqueRandomRange = require("unique-random-range");
 
 const app: Application = express();
